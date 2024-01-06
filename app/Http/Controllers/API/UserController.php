@@ -13,21 +13,27 @@ use Tymon\JWTAuth\Facades\JWTAuth;
 
 class UserController extends Controller
 {
-//     /**
-//     * Store a newly created resource in storage.
-//     * @return RedirectResponse
-//     */
+
+    public function getUser(): JsonResponse
+    {
+        $user = User::all();
+        return response()->json([
+            'status' => 'success',
+            'user' => $user,
+        ]);
+    }
+
     public function store(Request $request): JsonResponse
     {
+//        lo que me trae el token
+//        $token = JWTAuth::getToken();
+//        $apy = JWTAuth::getPayload($token)->toArray();
         $user = new User();
         $user->name = $request['name'];
         $user->email = $request['email'];
         $user->document = $request['document'];
         $user->password = bcrypt($request['password']);
         $user->save();
-//        lo que me trae el token
-        $token = JWTAuth::getToken();
-        $apy = JWTAuth::getPayload($token)->toArray();
 
         return response()->json([
             'status' => 'success',
