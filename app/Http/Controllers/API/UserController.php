@@ -16,7 +16,7 @@ class UserController extends Controller
 
     public function getUser(): JsonResponse
     {
-        $user = User::all();
+        $user = User::latest()->get();
         return response()->json([
             'status' => 'success',
             'user' => $user,
