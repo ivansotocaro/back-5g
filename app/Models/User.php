@@ -41,6 +41,7 @@ class User extends Authenticated implements JWTSubject
     public function getJWTCustomClaims()
     {
         return [
+            'id' =>$this->id,
             'email'=>$this->email,
             'name'=>$this->name,
             'is_admin'=>$this->is_admin,

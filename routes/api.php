@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\API\AuthController;
+use App\Http\Controllers\API\PaymentController;
 use App\Http\Controllers\API\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -24,3 +25,4 @@ Route::middleware('jwt.verify')->group(function(){
     Route::post('register', [UserController::class, 'store']);
     Route::get('user', [UserController::class, 'getUser']);
 });
+Route::post('savepayment', [PaymentController::class, 'create']);
