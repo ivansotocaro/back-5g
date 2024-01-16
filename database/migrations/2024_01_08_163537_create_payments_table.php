@@ -14,13 +14,13 @@ return new class extends Migration
         Schema::create('payments', function (Blueprint $table) {
             $table->increments('id');
             $table->unsignedInteger('user_id');
-            $table->unsignedInteger('user_document');
+            $table->integer('user_document');
             $table->integer('monto');
             $table->dateTime('payment_date');
             $table->dateTime('deadline_date');
-            $table->integer('id_payment');
+            $table->string('id_payment')->nullable();
             $table->foreign("user_id")->references("id")->on("users");
-            $table->foreign("user_document")->references("id")->on("users");
+            $table->foreign('user_document')->references('document')->on('users');
             $table->timestamps();
         });
     }

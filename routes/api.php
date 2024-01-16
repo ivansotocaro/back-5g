@@ -24,5 +24,5 @@ Route::post('login', [AuthController::class, 'login']);
 Route::middleware('jwt.verify')->group(function(){
     Route::post('register', [UserController::class, 'store']);
     Route::get('user', [UserController::class, 'getUser']);
+    Route::post('savepayment', [PaymentController::class, 'create']);
 });
-Route::post('savepayment', [PaymentController::class, 'create']);
