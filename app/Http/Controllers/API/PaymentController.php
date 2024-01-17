@@ -10,11 +10,33 @@ use Tymon\JWTAuth\Facades\JWTAuth;
 
 class PaymentController extends Controller
 {
+    public function index()
+    {
+        $payments = Payment::from('payments as p')
+        ->join('users as u', 'p.user_document', '=', 'u.document')
+        ->join('users as uu', 'p.user_id', '=', 'uu.id')
+        ->select(
+            'p.monto',
+            'p.payment_date',
+            'p.deadline_date',
+            'u.document',
+            'u.name',
+            'u.email',
+            'uu.name as user',
+        )
+        ->get();
+
+        return response()->json([
+            'success' => true,
+            'data' => $payments,
+        ]);
+    }
+
     public function create(Request $request)
     {
 
         //Token decode
-        $toke = $this->decodeToken();
+        // $toke = $this->decodeToken();
 
         $file = $request['filecsv'];
         // Open the CSV file
@@ -37,17 +59,24 @@ class PaymentController extends Controller
         // Output the resulting array
 
         foreach ($array as $key => $value) {
-            $payment = new Payment();
+            $maximumDate = $this->dateFormat($value['fecha pago'])->format('Y-m-d');
+            $currentDate = now()->toDateString();
 
-            $payment->user_id = $toke['id'];
-            $payment->user_document = $value['documento'];
-            $payment->monto = $value['monto'];
-            $payment->payment_date = $this->dateFormat($value['fecha pago']);
-            $payment->deadline_date = $this->dateFormat($value['fecha limite']);
-            $payment->save();
+            // if($maximumDate >= $currentDate) {
 
-            $payment->id_payment = $this->generarCodigo($payment->payment_date, $payment->id);
-            $payment->save();
+                $payment = new Payment();
+                $payment->user_id = 1;
+                $payment->user_document = $value['documento'];
+                $payment->monto = $value['monto'];
+                $payment->payment_date = $this->dateFormat($value['fecha pago']);
+                $payment->deadline_date = $this->dateFormat($value['fecha limite']);
+                $payment->save();
+
+                $payment->id_payment = $this->generateCode($payment->payment_date, $payment->id);
+                $payment->save();
+
+            // }
+
         }
 
         return response()->json(['ok' => 'true']);
@@ -67,7 +96,7 @@ class PaymentController extends Controller
         return new Carbon($date);
     }
 
-    function generarCodigo($paymentDate, $idPayment) {
+    function generateCode($paymentDate, $idPayment) {
 
         $paymentDate = $paymentDate->format('Y-m-d');
          // Formato de fecha YYYYMMDD 20231112
